@@ -30,7 +30,8 @@ def handle_client(conn, addr):
         if nama_file == "/":
             nama_file = "/public/index.html"
         else:
-            nama_file = "/public" + nama_file
+            nama_file = "/public" + ('/' if nama_file[0] != '/' else '') + nama_file
+            print(f"Requested file: {nama_file}")
         with open(nama_file[1:], "r", encoding="utf-8") as file:
             status = f"{http_code} {res_msg}"
             content = file.read()
@@ -73,14 +74,28 @@ def log(addrs, msg):
 # =========================================
 if __name__ == "__main__":
     # Start UDP Server
-    threading.Thread(target=udp_echo_server, daemon=True).start()
+    try:
+        threading.Thread(target=udp_echo_server, daemon=True).start()
+    except Exception as e:
+        print(f"Failed to start UDP server: {str(e)}")
+        exit(1)
+    except KeyboardInterrupt:
+        print("UDP server stopped by user")
+        exit(0)
     
     # Start TCP Web Server
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
-        server.bind(('', TCP_PORT))
-        server.listen(5)
-        print(f"Server running on port {TCP_PORT}/{UDP_PORT}, thread pool siap")
-        
-        while True:
-            conn, addr = server.accept()
-            threading.Thread(target=handle_client, args=(conn, addr)).start()
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+            server.bind(('', TCP_PORT))
+            server.listen(5)
+            print(f"Server running on port {TCP_PORT}/{UDP_PORT}, thread pool siap")
+            while True:
+                conn, addr = server.accept()
+                threading.Thread(target=handle_client, args=(conn, addr)).start()
+    except Exception as e:
+        print(f"Failed to start TCP server: {str(e)}")
+        exit(1)
+
+    except KeyboardInterrupt:
+        print("UDP server stopped by user")
+        exit(0)

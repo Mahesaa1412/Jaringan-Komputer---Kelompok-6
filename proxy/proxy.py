@@ -16,6 +16,7 @@ CONNECTION_TIMEOUT = 1
 os.makedirs("./cache", exist_ok=True)
 
 def handle_client(cli_sock, addr):
+    time.sleep(0.9)
     timestamp = time.time()
     filename = ""
     try:
@@ -78,7 +79,7 @@ def handle_client(cli_sock, addr):
                     break
 
             parsed = urlparse(f"http://{hostn}")
-            host, port = parsed.hostname, parsed.port or HOST_PORT
+            host, port = parsed.hostname, (parsed.port if parsed.port != PORT else HOST_PORT) or HOST_PORT
             print(f"Host tujuan: {host}:{port}")
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as web_sock:
                 web_sock.settimeout(CONNECTION_TIMEOUT)
