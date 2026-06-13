@@ -9,7 +9,7 @@ TCP_PROXY = 8080
 UDP_SERVER = 9000
 URI = "/index.html" 
 UDP_TIMEOUT = 1
-PING_INTERVAL = 1
+PING_INTERVAL = 5
 
 parser = argparse.ArgumentParser()
 
