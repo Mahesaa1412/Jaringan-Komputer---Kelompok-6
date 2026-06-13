@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO -->
     <title>Network Learning System - IFLAB</title>
-    <meta name="description" content="Learn networking concepts like OSI, TCP/IP, QoS, and Socket Programming interactively.">
+    <meta name="description"
+        content="Learn networking concepts like OSI, TCP/IP, QoS, and Socket Programming interactively.">
     <meta name="keywords" content="networking, OSI, TCP/IP, QoS, socket programming">
     <meta name="author" content="IFLAB">
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="assets/iflab.png">
 
     <!-- Loader Style -->
@@ -29,7 +31,7 @@
         }
 
         .spinner {
-            border: 5px solid rgba(255,255,255,0.2);
+            border: 5px solid rgba(255, 255, 255, 0.2);
             border-top: 5px solid white;
             border-radius: 50%;
             width: 50px;
@@ -39,7 +41,9 @@
         }
 
         @keyframes spin {
-            100% { transform: rotate(360deg); }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .hero h2 {
@@ -50,116 +54,118 @@
 
 <body>
 
-<!-- ===== LOADER ===== -->
-<div id="loader">
-    <div class="spinner"></div>
-    <p>Loading Network System...</p>
-</div>
+    <!-- ===== LOADER ===== -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Loading Network System...</p>
+    </div>
 
-<!-- ===== HEADER ===== -->
-<header>
-    <img src="assets/iflab.png" alt="IFLAB Logo" width="70">
-    <h1>Network Learning System</h1>
-    <p>Interactive OSI, TCP/IP & Socket Programming</p>
-</header>
+    <!-- ===== HEADER ===== -->
+    <header>
+        <img src="assets/iflab.png" alt="IFLAB Logo" width="70">
+        <h1>Network Learning System</h1>
+        <p>Interactive OSI, TCP/IP & Socket Programming</p>
+    </header>
 
-<!-- ===== NAVBAR ===== -->
-<nav>
-    <a href="index.html" class="active">Home</a>
-    <a href="osi.html">OSI Model</a>
-    <a href="tcpip.html">TCP/IP</a>
-    <a href="qos.html">QoS</a>
-    <a href="implementation.html">Socket</a>
+    <!-- ===== NAVBAR ===== -->
+    <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="osi.html">OSI Model</a>
+        <a href="tcpip.html">TCP/IP</a>
+        <a href="qos.html">QoS</a>
+        <a href="implementation.html">Socket</a>
 
-    <button onclick="toggleDark()" style="margin-left:20px;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;">
-        🌙
-    </button>
-</nav>
+        <button onclick="toggleDark()"
+            style="margin-left:20px;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;">
+            🌙
+        </button>
+    </nav>
 
-<!-- ===== HERO ===== -->
-<section class="hero">
-    <h2>Master Networking the Smart Way 🚀</h2>
-    <p style="max-width: 600px; margin: 0 auto 20px auto; opacity: 0.9;">
-        Understand OSI, TCP/IP, QoS, and Socket Programming 
-        through interactive learning and real implementation.
-    </p>
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <h2>Master Networking the Smart Way 🚀</h2>
+        <p style="max-width: 600px; margin: 0 auto 20px auto; opacity: 0.9;">
+            Understand OSI, TCP/IP, QoS, and Socket Programming
+            through interactive learning and real implementation.
+        </p>
 
-    <a href="#features" class="btn">Start Learning</a>
-</section>
+        <a href="#features" class="btn">Start Learning</a>
+    </section>
 
-<!-- ===== FEATURE GRID ===== -->
-<section class="grid" id="features">
+    <!-- ===== FEATURE GRID ===== -->
+    <section class="grid" id="features">
 
-    <a href="osi.html">
-        <div class="box">
-            <div style="font-size: 1.2rem;">OSI Model</div>
-            <div style="font-size: 0.9rem;">7-layer architecture</div>
-        </div>
-    </a>
+        <a href="osi.html">
+            <div class="box">
+                <div style="font-size: 1.2rem;">OSI Model</div>
+                <div style="font-size: 0.9rem;">7-layer architecture</div>
+            </div>
+        </a>
 
-    <a href="tcpip.html">
-        <div class="box">
-            <div style="font-size: 1.2rem;">TCP/IP</div>
-            <div style="font-size: 0.9rem;">Internet communication</div>
-        </div>
-    </a>
+        <a href="tcpip.html">
+            <div class="box">
+                <div style="font-size: 1.2rem;">TCP/IP</div>
+                <div style="font-size: 0.9rem;">Internet communication</div>
+            </div>
+        </a>
 
-    <a href="qos.html">
-        <div class="box">
-            <div style="font-size: 1.2rem;">QoS</div>
-            <div style="font-size: 0.9rem;">Network performance</div>
-        </div>
-    </a>
+        <a href="qos.html">
+            <div class="box">
+                <div style="font-size: 1.2rem;">QoS</div>
+                <div style="font-size: 0.9rem;">Network performance</div>
+            </div>
+        </a>
 
-    <a href="implementation.html">
-        <div class="box">
-            <div style="font-size: 1.2rem;">Socket</div>
-            <div style="font-size: 0.9rem;">Client–Server impl.</div>
-        </div>
-    </a>
+        <a href="implementation.html">
+            <div class="box">
+                <div style="font-size: 1.2rem;">Socket</div>
+                <div style="font-size: 0.9rem;">Client–Server impl.</div>
+            </div>
+        </a>
 
-</section>
+    </section>
 
-<!-- ===== ABOUT ===== -->
-<section class="card">
-    <h2>About This Project</h2>
-    <img src="assets/network.png" class="img-center">
+    <!-- ===== ABOUT ===== -->
+    <section class="card">
+        <h2>About This Project</h2>
+        <img src="assets/network.png" class="img-center">
 
-    <p>
-        This website demonstrates networking concepts using a simple web server 
-        built with socket programming.
-    </p>
+        <p>
+            This website demonstrates networking concepts using a simple web server
+            built with socket programming.
+        </p>
 
-    <ul>
-        <li>HTTP Request Handling</li>
-        <li>Static File Serving</li>
-        <li>Routing System</li>
-        <li>Custom Error Pages (404, 500, 502, 504)</li>
-    </ul>
-</section>
+        <ul>
+            <li>HTTP Request Handling</li>
+            <li>Static File Serving</li>
+            <li>Routing System</li>
+            <li>Custom Error Pages (404, 500, 502, 504)</li>
+        </ul>
+    </section>
 
-<!-- ===== FOOTER ===== -->
-<footer>
-    <p>&copy; 2026 IFLAB | Network Learning Project</p>
-</footer>
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>&copy; 2026 IFLAB | Network Learning Project</p>
+    </footer>
 
-<!-- ===== SCRIPT ===== -->
-<script>
-/* Loader */
-window.onload = function() {
-    document.getElementById("loader").style.display = "none";
-}
+    <!-- ===== SCRIPT ===== -->
+    <script>
+        /* Loader */
+        window.onload = function () {
+            document.getElementById("loader").style.display = "none";
+        }
 
-/* Dark Mode */
-function toggleDark() {
-    document.body.classList.toggle("dark");
-}
+        /* Dark Mode */
+        function toggleDark() {
+            document.body.classList.toggle("dark");
+        }
 
-/* Basic Error Redirect (optional enhancement) */
-window.onerror = function() {
-    window.location.href = "status/500.html";
-}
-</script>
+        /* Basic Error Redirect (optional enhancement) */
+        window.onerror = function () {
+            window.location.href = "status/500.html";
+        }
+    </script>
 
 </body>
+
 </html>

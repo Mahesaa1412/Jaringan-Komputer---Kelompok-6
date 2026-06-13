@@ -16,6 +16,7 @@ CONNECTION_TIMEOUT = 1
 os.makedirs("./cache", exist_ok=True)
 
 def handle_client(cli_sock, addr):
+    timestamp = time.time()
     filename = ""
     try:
         test_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,6 +25,8 @@ def handle_client(cli_sock, addr):
         test_sock.close()
     except:
         cli_sock.sendall(b"HTTP/1.1 502 Bad Gateway\r\n\r\n<h1>502 Bad Gateway</h1>")
+        rtt = (time.time() - timestamp) * 1000
+        print(f"[IP Client: {addr[0]}] Request selesai, RTT: {rtt:.4f} ms, file: /{filename}", flush=True)
         return
     try:
         msg = cli_sock.recv(BUF_SIZE).decode()
@@ -43,6 +46,8 @@ def handle_client(cli_sock, addr):
             if not filename or filename == "/":
                 filename = "index.html"
         except IndexError:
+            rtt = (time.time() - timestamp) * 1000
+            print(f"[IP Client: {addr[0]}] Request selesai, RTT: {rtt:.4f} ms, file: /{filename}", flush=True)
             return cli_sock.sendall(b"HTTP/1.0 400 Bad Request\r\n\r\n")
         
 
@@ -97,6 +102,8 @@ def handle_client(cli_sock, addr):
         cli_sock.sendall(b"HTTP/1.0 502 Bad Gateway\r\n\r\n<h1>502 Bad Gateway</h1>")
     finally:
         cli_sock.close()
+        rtt = (time.time() - timestamp) * 1000
+        print(f"[IP Client: {addr[0]}] Request selesai, RTT: {rtt:.4f} ms, file: /{filename}", flush=True)
 
 if __name__ == "__main__":
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
