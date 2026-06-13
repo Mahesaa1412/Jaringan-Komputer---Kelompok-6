@@ -9,9 +9,21 @@ import time
 TCP_PORT, UDP_PORT = 8000, 9000
 PROXY_IP = 'localhost'
 
-def send_response(sock, status, body):
+CONTENT_TYPE = {
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "application/javascript",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".gif": "image/gif",
+    ".svg": "image/svg+xml",
+    ".txt": "text/plain",
+}
+
+def send_response(sock, content_type, status, body):
     """Fungsi ringkas untuk mengirim HTTP Header + Body"""
-    header = f"HTTP/1.1 {status}\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {len(body.encode())}\r\n\r\n"
+    header = f"HTTP/1.1 {status}\r\nContent-Type: {content_type}; charset=utf-8\r\nContent-Length: {len(body.encode())}\r\n\r\n"
+    print(f"Sending response with status: {status}, Content-Type: {content_type}, Body: {body}")
     sock.sendall(header.encode() + body.encode())
 
 # =========================================
@@ -47,7 +59,8 @@ def handle_client(conn, addr):
         status = f"{http_code} {res_msg}"
         content = f"<html><body><h1>{status}</h1><p>{str(e)}</p></body></html>"
     finally:
-        send_response(conn, f"{http_code} {res_msg}", content)
+        content_type = CONTENT_TYPE.get(nama_file[nama_file.rfind('.'):], "text/plain")
+        send_response(conn, content_type, f"{http_code} {res_msg}", content)
         addrs = addr[0]
         log(addrs, f"[{datetime.now()}] Proxy: {addrs} | File: {nama_file} | Status: {status}")
         conn.close()
