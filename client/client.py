@@ -33,7 +33,6 @@ if args.mode == "tcp":
         request = (
             f"GET {URI} {PROTOCOL}\r\n"
             f"Host: {HOST_PROXY}\r\n"
-            # "Connection: close\r\n"
             "\r\n"
         )
         client.sendall(request.encode())
@@ -89,10 +88,20 @@ elif args.mode == "udp":
     success_count = sum(1 for res in results if res["status"] == "ok")
     avg_rtt = total_rtt / success_count if success_count > 0 else None
     packet_loss = ((PING_INTERVAL - success_count) / PING_INTERVAL) * 100
+
+    valid_ping = [res["rtt"] for res in results if res["rtt"] is not None]
+
+    if success_count:
+        jitter = [abs((valid_ping[i] - valid_ping[i-1]) if i != 0 else 0) for i, _ in enumerate(valid_ping)]
+        avg_jitter = sum(jitter) / (success_count - 1)
+    else:
+        avg_jitter = None
+
     print("\n--- Ping Statistics ---")
     print(f"Total Pings: {PING_INTERVAL}")
     print(f"Successful Pings: {success_count}")
     print(f"Packet Loss: {packet_loss:.2f}%")
+    print(f"Jitter: {avg_jitter} ms")
     if min_rtt is not None:
         print(f"Minimum RTT: {min_rtt:.4f} ms")
     if max_rtt is not None:
