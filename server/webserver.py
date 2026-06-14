@@ -63,24 +63,21 @@ def handle_client(conn, addr):
         else:
             nama_file = "/public" + ('/' if nama_file[0] != '/' else '') + nama_file
             
-        content_type = CONTENT_TYPE.get(nama_file[nama_file.rfind('.'):], "text/plain")
-        open_mode = "rb" if content_type.startswith("image/") else "r"
-        with open(nama_file[1:], open_mode, encoding="utf-8" if not content_type.startswith("image/") else None) as file:
-            status = f"{http_code} {res_msg}"
-            content = file.read()
+        content, content_type = open_file(nama_file)
+        status = f"{http_code} {res_msg}"
             
     except FileNotFoundError:
         http_code = 404
+        error_file = f"/public/status/{http_code}.html"
+        content, content_type = open_file(error_file)
         res_msg = "Not Found"
         status = f"{http_code} {res_msg}"
-        content_type = "text/html"
-        content = f"<html><body><h1>{status}</h1></body></html>"
     except Exception as e:
         http_code = 500
         res_msg = "Internal Server Error"
         status = f"{http_code} {res_msg}"
-        content_type = "text/html"
-        content = f"<html><body><h1>{status}</h1><p>{str(e)}</p></body></html>"
+        error_file = f"/public/status/{http_code}.html"
+        content, content_type = open_file(error_file)
     finally:
         send_response(conn, content_type, f"{http_code} {res_msg}", content)
         addrs = addr[0]
@@ -103,6 +100,13 @@ def udp_echo_server():
 def log(addrs, msg):
     if addrs == PROXY_IP:
         print(msg)
+        
+def open_file(name_file:str):
+    content_type = CONTENT_TYPE.get(name_file[name_file.rfind('.'):], "text/plain")
+    open_mode = "rb" if content_type.startswith("image/") else "r"
+    with open(name_file[1:], open_mode, encoding="utf-8" if not content_type.startswith("image/") else None) as file:
+        content = file.read()
+    return content, content_type
 
 # =========================================
 # MAIN EXECUTION
