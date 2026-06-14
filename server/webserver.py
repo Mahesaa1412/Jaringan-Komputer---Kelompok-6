@@ -8,6 +8,7 @@ import time
 # =========================================
 TCP_PORT, UDP_PORT = 8000, 9000
 PROXY_IP = 'localhost'
+PROTOCOL = "HTTP/1.1"
 
 CONTENT_TYPE = {
     ".html": "text/html",
@@ -20,11 +21,27 @@ CONTENT_TYPE = {
     ".txt": "text/plain",
 }
 
-def send_response(sock, content_type, status, body):
+def send_response(sock, content_type:str, status, body):
     """Fungsi ringkas untuk mengirim HTTP Header + Body"""
-    header = f"HTTP/1.1 {status}\r\nContent-Type: {content_type}; charset=utf-8\r\nContent-Length: {len(body.encode())}\r\n\r\n"
-    print(f"Sending response with status: {status}, Content-Type: {content_type}, Body: {body}")
-    sock.sendall(header.encode() + body.encode())
+    if not isinstance(body, bytes):
+        body = body.encode()
+    header = ""
+    protocol = " "
+    if content_type.startswith("image/"):
+        header = (
+            f"{PROTOCOL} {status}\r\n"
+            f"Content-Type: {content_type}\r\n"
+            f"Content-Length: {len(body)}\r\n\r\n"
+        )
+    else:
+        header = (
+            f"{PROTOCOL} {status}\r\n"
+            f"Content-Type: {content_type}; charset=utf-8\r\n"
+            f"Content-Length: {len(body)}\r\n\r\n"
+        )
+    
+    print(f"Sending response with status: {status}")
+    sock.sendall(header.encode() + body)
 
 # =========================================
 # TCP WEB SERVER
@@ -35,16 +52,20 @@ def handle_client(conn, addr):
     res_msg = "OK"
     status = f"{http_code} {res_msg}"
     nama_file = "/public/index.html"
+    content_type = "text/html"
     try:
         pesan = conn.recv(1024).decode()
+        print(f"Received request from {addr[0]}")
         if not pesan: return
         nama_file = pesan.splitlines()[0].split()[1]
         if nama_file == "/":
             nama_file = "/public/index.html"
         else:
             nama_file = "/public" + ('/' if nama_file[0] != '/' else '') + nama_file
-            print(f"Requested file: {nama_file}")
-        with open(nama_file[1:], "r", encoding="utf-8") as file:
+            
+        content_type = CONTENT_TYPE.get(nama_file[nama_file.rfind('.'):], "text/plain")
+        open_mode = "rb" if content_type.startswith("image/") else "r"
+        with open(nama_file[1:], open_mode, encoding="utf-8" if not content_type.startswith("image/") else None) as file:
             status = f"{http_code} {res_msg}"
             content = file.read()
             
@@ -52,14 +73,15 @@ def handle_client(conn, addr):
         http_code = 404
         res_msg = "Not Found"
         status = f"{http_code} {res_msg}"
+        content_type = "text/html"
         content = f"<html><body><h1>{status}</h1></body></html>"
     except Exception as e:
         http_code = 500
         res_msg = "Internal Server Error"
         status = f"{http_code} {res_msg}"
+        content_type = "text/html"
         content = f"<html><body><h1>{status}</h1><p>{str(e)}</p></body></html>"
     finally:
-        content_type = CONTENT_TYPE.get(nama_file[nama_file.rfind('.'):], "text/plain")
         send_response(conn, content_type, f"{http_code} {res_msg}", content)
         addrs = addr[0]
         log(addrs, f"[{datetime.now()}] Proxy: {addrs} | File: {nama_file} | Status: {status}")

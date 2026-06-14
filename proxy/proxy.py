@@ -16,7 +16,6 @@ CONNECTION_TIMEOUT = 1
 os.makedirs("./cache", exist_ok=True)
 
 def handle_client(cli_sock, addr):
-    time.sleep(0.9)
     timestamp = time.time()
     filename = ""
     try:
@@ -49,15 +48,14 @@ def handle_client(cli_sock, addr):
         except IndexError:
             rtt = (time.time() - timestamp) * 1000
             print(f"[IP Client: {addr[0]}] Request selesai, RTT: {rtt:.4f} ms, file: /{filename}", flush=True)
-            return cli_sock.sendall(b"HTTP/1.0 400 Bad Request\r\n\r\n")
+            return cli_sock.sendall(b"HTTP/1.1 400 Bad Request\r\n\r\n")
         
 
-        cache_path = os.path.join("./cache", filename)
+        cache_path = "./cache/" + filename
 
         # =========================================================
         # CACHE HIT
         # =========================================================
-        print(cache_path)
         if os.path.exists(cache_path) and (time.time() - os.path.getmtime(cache_path) < CACHE_TIMEOUT):
             # FLUSH=TRUE AGAR LOG LANGSUNG MUNCUL DI TERMINAL LAPTOP A
             print(f"[IP Client: {addr[0]}] Mengirim dari cache lokal, log: HIT, respons lebih cepat -> /{filename}", flush=True)
@@ -84,7 +82,7 @@ def handle_client(cli_sock, addr):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as web_sock:
                 web_sock.settimeout(CONNECTION_TIMEOUT)
                 web_sock.connect((host, port))
-                req = f"GET /{filename} HTTP/1.0\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n"
+                req = f"GET /{filename} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n"
                 print(f"Request to {host}:{port}:\n{req}")
                 web_sock.sendall(req.encode())
                 
@@ -93,18 +91,20 @@ def handle_client(cli_sock, addr):
 
                 # SAVE & SEND CACHE
                 if b"200 OK" in res:
+                    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
                     with open(cache_path, "wb") as f: f.write(res)
+                print(f"Bytes received from server: {len(res)}, sending to client...")
                 
                 cli_sock.sendall(res)
 
     except socket.timeout:
-        cli_sock.sendall(b"HTTP/1.0 504 Gateway Timeout\r\n\r\n<h1>504 Gateway Timeout</h1>")
+        cli_sock.sendall(b"HTTP/1.1 504 Gateway Timeout\r\n\r\n<h1>504 Gateway Timeout</h1>")
     except Exception as e:
-        cli_sock.sendall(b"HTTP/1.0 502 Bad Gateway\r\n\r\n<h1>502 Bad Gateway</h1>")
+        cli_sock.sendall(f"HTTP/1.1 502 Bad Gateway\r\n\r\n<h1>502 Bad Gateway</h1><p>{str(e)}</p>".encode())
+        print(f"Error handling request from {addr[0]}: {str(e)}", flush=True)
     finally:
         cli_sock.close()
         rtt = (time.time() - timestamp) * 1000
-        print(f"[IP Client: {addr[0]}] Request selesai, RTT: {rtt:.4f} ms, file: /{filename}", flush=True)
 
 if __name__ == "__main__":
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:

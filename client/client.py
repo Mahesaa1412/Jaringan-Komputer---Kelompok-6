@@ -7,9 +7,11 @@ HOST_SERVER = 'localhost'
 HOST_PROXY = 'localhost'
 TCP_PROXY = 8080
 UDP_SERVER = 9000
-URI = "/index.html" 
+URI = "/missing.html" 
+PROTOCOL = "HTTP/1.1"
 UDP_TIMEOUT = 1
-PING_INTERVAL = 5
+BUFFER_SIZE = 4096
+PING_INTERVAL = 10
 
 parser = argparse.ArgumentParser()
 
@@ -24,22 +26,25 @@ args = parser.parse_args()
 
 if args.mode == "tcp":
     try:
-        for i in range(PING_INTERVAL):
-            print("Menjalankan TCP Server")
-            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client.connect((HOST_PROXY, TCP_PROXY))
-            
-            request = (
-                f"GET {URI} HTTP/1.1\r\n"
-                f"Host: {HOST_PROXY}\r\n"
-                # "Connection: close\r\n"
-                "\r\n"
-            )
-            client.sendall(request.encode())
+        print("Menjalankan TCP Server")
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((HOST_PROXY, TCP_PROXY))
+        
+        request = (
+            f"GET {URI} {PROTOCOL}\r\n"
+            f"Host: {HOST_PROXY}\r\n"
+            # "Connection: close\r\n"
+            "\r\n"
+        )
+        client.sendall(request.encode())
 
-            response = client.recv(1024)
-            print(response)
-            client.close()
+        response = b""
+        while (data := client.recv(BUFFER_SIZE)): response += data
+        protocol_response = response.decode().split()[0]
+        status_response = response.split()[1].decode() if len(response.split()) > 1 else "Unknown"
+    
+        print(f"{protocol_response} {status_response}")
+        client.close()
     except socket.timeout:
         print("Request timed out")
     except Exception as e:
@@ -60,7 +65,7 @@ elif args.mode == "udp":
             client.sendto(payload.encode(), (HOST_SERVER, UDP_SERVER))
             client.settimeout(UDP_TIMEOUT)
             
-            response, addr = client.recvfrom(1024)
+            response, addr = client.recvfrom(BUFFER_SIZE)
             
             rtt = (time.time() - timestamp) * 1000
             
