@@ -6,7 +6,7 @@ from datetime import datetime
 # CONFIG & HELPER
 # =========================================
 TCP_PORT, UDP_PORT = 8000, 9000
-PROXY_IP = 'localhost'
+PROXY_IP = '10.93.156.217'
 PROTOCOL = "HTTP/1.1"
 
 CONTENT_TYPE = {

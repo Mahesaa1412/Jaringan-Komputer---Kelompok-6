@@ -5,13 +5,13 @@ import os
 from urllib.parse import urlparse
 
 # CONFIG PROXY
-HOST = 'localhost' # Ganti dengan IP server jika diperlukan
+HOST = '10.93.156.175' # Ganti dengan IP server jika diperlukan
 CACHE_TIMEOUT = 3600
 BUF_SIZE = 4096
 PORT = 8080
 HOST_PORT = 8000
 PROXY_IP = '0.0.0.0' # Mendengarkan semua interface (termasuk 10.93.156.217)
-CONNECTION_TIMEOUT = 1
+CONNECTION_TIMEOUT = 10
 CACHE_BASE_PATH = './cache/'
 
 def handle_client(cli_sock, addr):
@@ -66,11 +66,7 @@ def handle_client(cli_sock, addr):
             
             # Deteksi host tujuan dari request Client
             hostn = HOST
-            for line in msg.splitlines():
-                if line.lower().startswith("host:"):
-                    hostn = line.split(":", 1)[1].strip()
-                    break
-
+            
             parsed = urlparse(f"http://{hostn}")
             host, port = parsed.hostname, (parsed.port if parsed.port != PORT else HOST_PORT) or HOST_PORT
             print(f"Host tujuan: {host}:{port}")

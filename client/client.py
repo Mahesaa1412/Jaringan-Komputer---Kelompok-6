@@ -3,11 +3,11 @@ import datetime
 import time
 import argparse
 
-HOST_SERVER = 'localhost'
-HOST_PROXY = 'localhost'
+HOST_SERVER = "10.93.156.175"
+HOST_PROXY = '10.93.156.217'
 TCP_PROXY = 8080
 UDP_SERVER = 9000
-URI = "/missing.html" 
+URI = "/index.html" 
 PROTOCOL = "HTTP/1.1"
 UDP_TIMEOUT = 1
 BUFFER_SIZE = 4096
