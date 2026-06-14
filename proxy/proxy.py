@@ -12,8 +12,7 @@ PORT = 8080
 HOST_PORT = 8000
 PROXY_IP = '0.0.0.0' # Mendengarkan semua interface (termasuk 10.93.156.217)
 CONNECTION_TIMEOUT = 1
-
-os.makedirs("./cache", exist_ok=True)
+CACHE_BASE_PATH = './cache/'
 
 def handle_client(cli_sock, addr):
     timestamp = time.time()
@@ -31,9 +30,6 @@ def handle_client(cli_sock, addr):
     try:
         msg = cli_sock.recv(BUF_SIZE).decode()
         if not msg: return
-        # if not web_sock.connect((host, port)):
-        #     cli_sock.sendall(b"HTTP/1.0 502 Bad Gateway\r\n\r\n<h1>502 Bad Gateway</h1>")
-        #     return
        
         try:
             raw_url = msg.split()[1]
@@ -49,14 +45,13 @@ def handle_client(cli_sock, addr):
             rtt = (time.time() - timestamp) * 1000
             print(f"[IP Client: {addr[0]}] Request selesai, RTT: {rtt:.4f} ms, file: /{filename}", flush=True)
             return cli_sock.sendall(b"HTTP/1.1 400 Bad Request\r\n\r\n")
-        
-
-        cache_path = "./cache/" + filename
 
         # =========================================================
         # CACHE HIT
         # =========================================================
-        if os.path.exists(cache_path) and (time.time() - os.path.getmtime(cache_path) < CACHE_TIMEOUT):
+        cache_path = CACHE_BASE_PATH + filename
+        cache_exist = os.path.exists(cache_path) and (time.time() - os.path.getmtime(cache_path) < CACHE_TIMEOUT)
+        if cache_exist:
             # FLUSH=TRUE AGAR LOG LANGSUNG MUNCUL DI TERMINAL LAPTOP A
             print(f"[IP Client: {addr[0]}] Mengirim dari cache lokal, log: HIT, respons lebih cepat -> /{filename}", flush=True)
             with open(cache_path, "rb") as f:

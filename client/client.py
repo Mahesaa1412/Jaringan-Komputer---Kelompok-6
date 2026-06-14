@@ -21,7 +21,6 @@ parser.add_argument(
     required=True,
     help="Pilih mode server"
 )
-client = None
 args = parser.parse_args()
 
 if args.mode == "tcp":
@@ -61,8 +60,8 @@ elif args.mode == "udp":
         try:
             timestamp = time.time()
             payload = f"Ping {i+1} {timestamp}"
-            client.sendto(payload.encode(), (HOST_SERVER, UDP_SERVER))
             client.settimeout(UDP_TIMEOUT)
+            client.sendto(payload.encode(), (HOST_SERVER, UDP_SERVER))
             
             response, addr = client.recvfrom(BUFFER_SIZE)
             

@@ -1,7 +1,6 @@
 import socket
 import threading
 from datetime import datetime
-import time
 
 # =========================================
 # CONFIG & HELPER
@@ -21,12 +20,21 @@ CONTENT_TYPE = {
     ".txt": "text/plain",
 }
 
-def send_response(sock, content_type:str, status, body):
-    """Fungsi ringkas untuk mengirim HTTP Header + Body"""
+def send_response(sock, content_type:str, status:str, body):
+    """
+        Fungsi ringkas untuk mengirim HTTP Header + Body
+
+        @param: sock: connection object
+
+        @param: content_type: content_type string
+
+        @param: status: status string e.g. '200 OK'
+
+        @param: body
+    """
     if not isinstance(body, bytes):
         body = body.encode()
     header = ""
-    protocol = " "
     if content_type.startswith("image/"):
         header = (
             f"{PROTOCOL} {status}\r\n"
@@ -47,6 +55,13 @@ def send_response(sock, content_type:str, status, body):
 # TCP WEB SERVER
 # =========================================
 def handle_client(conn, addr):
+    """
+        Request Handler
+
+        @param: conn: connection request object
+
+        @param: addr: client request addr
+    """
     http_code = 200
     content = ""
     res_msg = "OK"
@@ -64,7 +79,6 @@ def handle_client(conn, addr):
             nama_file = "/public" + ('/' if nama_file[0] != '/' else '') + nama_file
             
         content, content_type = open_file(nama_file)
-        status = f"{http_code} {res_msg}"
             
     except FileNotFoundError:
         http_code = 404
@@ -103,8 +117,8 @@ def log(addrs, msg):
         
 def open_file(name_file:str):
     content_type = CONTENT_TYPE.get(name_file[name_file.rfind('.'):], "text/plain")
-    open_mode = "rb" if content_type.startswith("image/") else "r"
-    with open(name_file[1:], open_mode, encoding="utf-8" if not content_type.startswith("image/") else None) as file:
+    open_mode = "rb"
+    with open(name_file[1:], open_mode) as file:
         content = file.read()
     return content, content_type
 
